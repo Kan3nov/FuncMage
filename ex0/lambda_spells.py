@@ -13,53 +13,55 @@ def spell_transformer(spells: list[str]) -> list[str]:
 
 
 def mage_stats(mages: list[dict[str, int | str]]
-               ) -> dict[str, float | dict[str, int | str]]:
-    stats: dict[str, float | dict[str, int | str]] = {}
-    stats["max_power"] = max(mages, key=lambda x: x["power"])
-    stats["min_power"] = min(mages, key=lambda x: x["power"])
+               ) -> dict[str, float | int]:
+    stats: dict[str, float | int] = {}
+    stats["max_power"] = int(max(mages, key=lambda x: x["power"])["power"])
+    stats["min_power"] = int(min(mages, key=lambda x: x["power"])["power"])
     stats["avg_power"] = round(sum(list(map(lambda x: int(x["power"]), mages)))
                                / len(mages), 2)
     return stats
 
 
-print("=== Lambda Sanctum ===")
-print("\nTesting artifact sorter...")
-artifacts: \
-          list[dict[str, str | int]] = [{'name': 'Crystal Orb',
-                                        'power': 79, 'type': 'weapon'},
-                                        {'name': 'Wind Cloak',
-                                        'power': 67, 'type': 'relic'},
-                                        {'name': 'Crystal Orb',
-                                        'power': 115, 'type': 'focus'},
-                                        {'name': 'Earth Shield',
-                                        'power': 105, 'type': 'relic'}]
-print("artifacts before sorting: ", artifacts)
-print("artifacts after sorting: ", artifact_sorter(artifacts))
-print()
+def main() -> None:
+    print("=== Lambda Sanctum ===")
+    print("\nTesting artifact sorter...")
+    artifacts: \
+        list[dict[str, str | int]] = [{'name': 'Crystal Orb',
+                                       'power': 79, 'type': 'weapon'},
+                                      {'name': 'Wind Cloak',
+                                       'power': 67, 'type': 'relic'},
+                                      {'name': 'Crystal Orb',
+                                       'power': 115, 'type': 'focus'},
+                                      {'name': 'Earth Shield',
+                                       'power': 105, 'type': 'relic'}]
+    print("artifacts before sorting: ", artifacts)
+    print("artifacts after sorting: ", artifact_sorter(artifacts))
+    print()
 
-mages: list[dict[str, str | int]] = \
-                             [
-                              {'name': 'Luna', 'power': 89, 'element': 'ice'},
-                              {'name': 'Morgan', 'power': 88,
-                               'element': 'water'},
-                              {'name': 'Sage', 'power': 67,
-                               'element': 'shadow'},
-                              {'name': 'Riley', 'power': 75, 'element': 'ice'},
-                              {'name': 'Alex', 'power': 85, 'element': 'fire'}
-                            ]
-print("filtering the mages out of the ones with power less than 80...")
-print("mages before filtering: ", mages)
-print("mages after filtering: ", power_filter(mages, 80))
-print()
+    mages: list[dict[str, str | int]] = \
+        [{'name': 'Luna', 'power': 89, 'element': 'ice'},
+         {'name': 'Morgan', 'power': 88, 'element': 'water'},
+         {'name': 'Sage', 'power': 67, 'element': 'shadow'},
+         {'name': 'Riley', 'power': 75, 'element': 'ice'},
+         {'name': 'Alex', 'power': 85, 'element': 'fire'}
+         ]
+    print("filtering the mages out of the ones with power less than 80...")
+    print("mages before filtering: ", mages)
+    print("mages after filtering: ", power_filter(mages, 80))
+    print()
 
-print("Transforming spell names to have '*' as a prefix and a suffix")
-spells = ['tsunami', 'darkness', 'tornado', 'fireball']
-print("spells before tranforming: ", spells)
-print("spells after transforming: ", spell_transformer(spells))
-print()
+    print("Transforming spell names to have '*' as a prefix and a suffix")
+    spells = ['tsunami', 'darkness', 'tornado', 'fireball']
+    print("spells before tranforming: ", spells)
+    print("spells after transforming: ", spell_transformer(spells))
+    print()
 
-print("Calculating mages stats...")
-stats = mage_stats(mages)
-print("Max power : ", stats["max_power"])
-print("Min power : ", stats["min_power"])
-print("Avg power : ", stats["avg_power"])
+    print("Calculating mages stats...")
+    stats = mage_stats(mages)
+    print("Max power : ", stats["max_power"])
+    print("Min power : ", stats["min_power"])
+    print("Avg power : ", stats["avg_power"])
+
+
+if __name__ == "__main__":
+    main()

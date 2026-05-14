@@ -1,8 +1,13 @@
-from typing import Any
+from typing import Any, TypedDict
 from collections.abc import Callable
 
 
-def mage_counter() -> Callable:
+class MemoryVault(TypedDict):
+    store: Callable[[str, Any], None]
+    recall: Callable[[str], Any]
+
+
+def mage_counter() -> Callable[[], int]:
     count = 0
 
     def counter() -> int:
@@ -12,36 +17,37 @@ def mage_counter() -> Callable:
     return counter
 
 
-def spell_accumulator(initial_power: int) -> Callable:
+def spell_accumulator(initial_power: int) -> Callable[[int], int]:
     power = initial_power
 
-    def counter(add_power) -> int:
+    def counter(add_power: int) -> int:
         nonlocal power
         power += add_power
         return power
     return counter
 
 
-def enchantment_factory(enchantment_type: str) -> Callable:
-    def apply_enchant(item_name: str):
+def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
+    def apply_enchant(item_name: str) -> str:
         return enchantment_type + " " + item_name
     return apply_enchant
 
 
-def memory_vault() -> dict[str, Callable]:
+def memory_vault(
+            ) -> MemoryVault:
     vault = {}
 
     def store(key: str, value: Any) -> None:
         vault[key] = value
 
-    def recall(key: str) -> str:
-        if (vault.get(key)):
+    def recall(key: str) -> Any:
+        if (key in vault):
             return vault[key]
         return "Memory not found"
     return {"store": store, "recall": recall}
 
 
-def main():
+def main() -> None:
     print("Testing mage counter...")
     counter_a = mage_counter()
     print("counter_a call 1:", counter_a())

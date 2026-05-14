@@ -1,10 +1,15 @@
-from typing import Any
+from typing import Any, Protocol
 from collections.abc import Callable
 from functools import reduce, partial, lru_cache, singledispatch
 from operator import add, mul
 
 
-def main():
+class EnchantmentFunc(Protocol):
+    def __call__(self, target: str, power: int, element: str) -> str:
+        ...
+
+
+def main() -> None:
     def spell_reducer(spells: list[int], operation: str) -> int:
         if len(spells) == 0:
             return 0
@@ -19,9 +24,10 @@ def main():
             return reduce(lambda x, y: x if x < y else y, spells)
         else:
             print("Error: Unknown Operation")
+            return (-1)
 
-    def partial_enchanter(base_enchantment: Callable
-                          ) -> dict[str, Callable]:
+    def partial_enchanter(base_enchantment: EnchantmentFunc
+                          ) -> dict[str, Callable[[str], str]]:
         base1 = partial(base_enchantment, power=50, element="fire")
         base2 = partial(base_enchantment, power=50, element="water")
         base3 = partial(base_enchantment, power=50, element="air")
@@ -40,19 +46,19 @@ def main():
             return "Unknown spell type"
 
         @func.register(int)
-        def _(meow) -> str:
+        def _(meow: int) -> str:
             return f"{meow} damage"
 
         @func.register(str)
-        def _(meow) -> str:
+        def _(meow: str) -> str:
             return meow
 
         @func.register(list)
-        def _(meow) -> str:
+        def _(meow: list[Any]) -> str:
             return f"{len(meow)} spells"
         return func
 
-    def meow(power: int, element: str, target: str) -> str:
+    def meow(target: str, power: int, element: str) -> str:
         return f"{element} spell is cast upon {target} " +\
                f"with a mana power of {power}"
 
@@ -61,6 +67,12 @@ def main():
     print("Sum: ", spell_reducer([22, 33, 38, 31, 50, 47], "add"))
     print("Product: ", spell_reducer([22, 33, 38, 31, 50, 47], "multiply"))
     print("Max: ", spell_reducer([22, 33, 38, 31, 50, 47], "max"))
+
+    print("\nTesting partial enchanter...")
+    print("Using 3 versions of the same function but " +
+          "with different preset arguments")
+    for x in partial_enchanter(meow).values():
+        print(x("Dragon"))
 
     print("\nTesting memoized fibonacci...")
     print("Fib(0)", memoized_fibonacci(0))

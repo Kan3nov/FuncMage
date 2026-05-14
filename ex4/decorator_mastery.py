@@ -1,12 +1,17 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Protocol
 from time import time, sleep
 from functools import wraps
 
 
-def spell_timer(func: Callable) -> Callable:
+class SpellCast(Protocol):
+    def __call__(self, power: int, spell_name: str) -> str:
+        ...
+
+
+def spell_timer(func: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(func)
-    def wrapper(*args, **kwargs) -> Any:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         print("Casting ", func.__name__, "...", sep="")
         time1 = time()
         result = func(*args, **kwargs)
@@ -16,10 +21,11 @@ def spell_timer(func: Callable) -> Callable:
     return wrapper
 
 
-def power_validator(min_power: int) -> Callable:
-    def pow_val(func: Callable):
+def power_validator(min_power: int) -> Callable[[SpellCast], SpellCast]:
+    def pow_val(func: SpellCast,
+                ) -> SpellCast:
         @wraps(func)
-        def wrapper(power: int, *args, **kwargs) -> Any:
+        def wrapper(power: int, *args: Any, **kwargs: Any) -> Any:
             if (power >= min_power):
                 return func(power, *args, **kwargs)
             else:
@@ -28,10 +34,11 @@ def power_validator(min_power: int) -> Callable:
     return pow_val
 
 
-def retry_spell(max_attempts: int) -> Callable:
-    def trials(func: Callable):
+def retry_spell(max_attempts: int
+                ) -> Callable[[Callable[..., str]], Callable[..., str]]:
+    def trials(func: Callable[..., str]) -> Callable[..., str]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> str:
             attempts = 1
             while attempts <= max_attempts:
                 try:
